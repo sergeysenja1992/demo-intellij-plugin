@@ -1,0 +1,19 @@
+plugins {
+    id 'org.jetbrains.intellij' version '0.6.5'
+    id 'org.jetbrains.kotlin.jvm' version '1.4.21'
+}
+group 'com.icthh.xm'; version '0.0.1'
+repositories { mavenCentral() }
+dependencies {
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.4.21")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:1.4.21")
+}
+sourceCompatibility = 11; targetCompatibility = 11
+compileKotlin { kotlinOptions.jvmTarget = "11" }
+patchPluginXml { changeNotes """Add change notes here.<br><em>most HTML tags may be used</em>""" }
+
+intellij {
+    version = '2020.3'
+    plugins = ['yaml']
+    updateSinceUntilBuild = false
+}

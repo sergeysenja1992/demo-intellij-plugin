@@ -1,0 +1,22 @@
+<idea-plugin>
+    <id>com.icthh.xm.demoplugin</id>
+    <name>Demonstration</name>
+    <vendor email="ваш email">Я</vendor>
+
+    <description><![CDATA[
+     This plugin demonstrate how to create plugin.
+    ]]></description>
+
+    <depends>com.intellij.modules.lang</depends>
+    <depends>com.intellij.modules.platform</depends>
+    <depends>org.jetbrains.plugins.yaml</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+<!--        PLACE FOR EXTENSIONS-->
+    </extensions>
+
+    <actions>
+<!--        PLACE FOR UI ELEMENTS-->
+    </actions>
+
+</idea-plugin>
