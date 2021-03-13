@@ -13,6 +13,10 @@
 <!--        PLACE FOR EXTENSIONS-->
     </extensions>
 
+    <extensions defaultExtensionNs="JavaScript">
+        <JsonSchema.ProviderFactory implementation="com.icthh.xm.demoplugin.EntitySchemaProviderFactory" />
+    </extensions>
+
     <actions>
 <!--        PLACE FOR UI ELEMENTS-->
         <group id="helloWorldGroup" text="HelloWorld">
