@@ -10,7 +10,7 @@
     <depends>org.jetbrains.plugins.yaml</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-<!--        PLACE FOR EXTENSIONS-->
+        <colorProvider implementation="com.icthh.xm.demoplugin.EntitySpecColorProvider" />
     </extensions>
 
     <extensions defaultExtensionNs="JavaScript">
