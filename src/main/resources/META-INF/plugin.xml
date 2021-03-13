@@ -3,9 +3,7 @@
     <name>Demonstration</name>
     <vendor email="ваш email">Я</vendor>
 
-    <description><![CDATA[
-     This plugin demonstrate how to create plugin.
-    ]]></description>
+    <description><![CDATA[ This plugin demonstrate how to create plugin. ]]></description>
 
     <depends>com.intellij.modules.lang</depends>
     <depends>com.intellij.modules.platform</depends>
