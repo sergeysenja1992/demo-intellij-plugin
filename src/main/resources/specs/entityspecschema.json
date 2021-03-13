@@ -239,8 +239,7 @@
                   "type": "string"
                 },
                 "builderType": {
-                  "type": "string",
-                  "enum": ["NEW", "SEARCH"]
+                  "type": "string"
                 },
                 "name": {
                   "type": "object",

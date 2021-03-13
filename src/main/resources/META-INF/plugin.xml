@@ -11,14 +11,15 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <colorProvider implementation="com.icthh.xm.demoplugin.EntitySpecColorProvider" />
+        <completion.contributor language="yaml" implementationClass="com.icthh.xm.demoplugin.BuilderTypeCompletionContributor" />
     </extensions>
 
     <extensions defaultExtensionNs="JavaScript">
         <JsonSchema.ProviderFactory implementation="com.icthh.xm.demoplugin.EntitySchemaProviderFactory" />
     </extensions>
 
+
     <actions>
-<!--        PLACE FOR UI ELEMENTS-->
         <group id="helloWorldGroup" text="HelloWorld">
             <add-to-group group-id="MainMenu" anchor="after" relative-to-action="HelpMenu" />
             <action id="helloWorldAction" class="com.icthh.xm.demoplugin.HelloWorld" text="Hello world" />
