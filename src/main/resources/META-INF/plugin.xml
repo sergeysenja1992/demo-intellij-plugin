@@ -12,6 +12,12 @@
     <extensions defaultExtensionNs="com.intellij">
         <colorProvider implementation="com.icthh.xm.demoplugin.EntitySpecColorProvider" />
         <completion.contributor language="yaml" implementationClass="com.icthh.xm.demoplugin.BuilderTypeCompletionContributor" />
+        <localInspection language="yaml" bundle="messages.XmEntitySpecification"
+                         key="inspections.builder.type"
+                         groupKey="inspections.group.name"
+                         shortName="BuilderTypeInspection"
+                         enabledByDefault="true"
+                         level="ERROR" implementationClass="com.icthh.xm.demoplugin.BuilderTypeLocalInspection" />
     </extensions>
 
     <extensions defaultExtensionNs="JavaScript">
