@@ -23,14 +23,13 @@ import org.jetbrains.yaml.psi.impl.YAMLSequenceImpl
 
 class BuilderTypeLocalInspection : LocalInspectionTool() {
 
-    val acceptableValue = setOf<String>("NEW", "BUILDER")
-
     override fun buildVisitor(
         holder: ProblemsHolder,
-        isOnTheFly: Boolean,
-        session: LocalInspectionToolSession
+        isOnTheFly: Boolean
     ): PsiElementVisitor {
         return object : YamlPsiElementVisitor() {
+            val acceptableValue = setOf<String>("NEW", "BUILDER")
+
             override fun visitElement(element: PsiElement) {
                 if (getPattern().accepts(element) && !acceptableValue.contains(element.text)) {
 
