@@ -1,25 +1,14 @@
 package com.icthh.xm.demoplugin
 
-import com.intellij.codeInsight.completion.*
-import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.codeInspection.*
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
-import com.intellij.patterns.PlatformPatterns
-import com.intellij.patterns.PlatformPatterns.psiElement
-import com.intellij.patterns.PsiElementPattern
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementVisitor
-import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.util.parentOfType
-import com.intellij.psi.util.parentsOfType
-import com.intellij.util.ProcessingContext
 import com.jetbrains.rd.util.first
 import org.apache.commons.text.similarity.LevenshteinDistance
-import org.jetbrains.annotations.NotNull
 import org.jetbrains.yaml.YAMLElementGenerator
 import org.jetbrains.yaml.psi.*
-import org.jetbrains.yaml.psi.impl.YAMLSequenceImpl
 
 class BuilderTypeLocalInspection : LocalInspectionTool() {
 
@@ -31,7 +20,7 @@ class BuilderTypeLocalInspection : LocalInspectionTool() {
             val acceptableValue = setOf<String>("NEW", "BUILDER")
 
             override fun visitElement(element: PsiElement) {
-                if (getPattern().accepts(element) && !acceptableValue.contains(element.text)) {
+                if (getPattern("builderType").accepts(element) && !acceptableValue.contains(element.text)) {
 
                     val levenshtein = LevenshteinDistance()
                     val variants = acceptableValue.map { it to levenshtein.apply(it, element.text) }.toMap()

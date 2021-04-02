@@ -15,6 +15,6 @@ patchPluginXml { changeNotes """Add change notes here.<br><em>most HTML tags may
 
 intellij {
     version = '2020.3.2'
-    plugins = ['yaml']
+    plugins = ['yaml', 'org.intellij.intelliLang']
     updateSinceUntilBuild = false
 }
