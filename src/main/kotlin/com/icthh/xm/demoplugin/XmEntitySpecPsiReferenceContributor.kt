@@ -1,6 +1,7 @@
 package com.icthh.xm.demoplugin
 
 import com.intellij.codeInsight.daemon.EmptyResolveMessageProvider
+import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.lang.Language
 import com.intellij.lang.injection.InjectedLanguageManager
 import com.intellij.lang.injection.MultiHostInjector
@@ -17,6 +18,7 @@ import com.intellij.psi.injection.ReferenceInjector
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.collectDescendantsOfType
 import com.intellij.psi.util.parentOfType
+import com.intellij.util.ArrayUtil
 import com.intellij.util.ProcessingContext
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.yaml.psi.*
@@ -45,7 +47,7 @@ class LinkTypeKeyReference(val target: PsiElement?, val parent: PsiElement, val 
     PsiReferenceBase<PsiElement>(parent, getValueTextRange(parent), false),
     EmptyResolveMessageProvider {
     override fun resolve() = target
-    override fun getUnresolvedMessagePattern(): String = "Link with value ${parent.text} not found"
+    override fun getUnresolvedMessagePattern(): String = "Entity with typeKey ${parent.text} not found"
 }
 
 private fun findReferenceTarget(element: PsiElement): YAMLValue? {
