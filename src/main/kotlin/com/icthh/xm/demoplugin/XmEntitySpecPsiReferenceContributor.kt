@@ -48,14 +48,22 @@ class LinkTypeKeyReference(val target: PsiElement?, val parent: PsiElement, val 
     EmptyResolveMessageProvider {
     override fun resolve() = target
     override fun getUnresolvedMessagePattern(): String = "Entity with typeKey ${parent.text} not found"
+
+    override fun getVariants(): Array<Any> {
+        return getTypeKeys(element).map { LookupElementBuilder.create(it.valueText) }.toTypedArray()
+    }
 }
 
 private fun findReferenceTarget(element: PsiElement): YAMLValue? {
-    val yamlDocument = element.parentOfType<YAMLDocument>() ?: return null
-    val target = yamlDocument.getChildrenOfType<YAMLSequence>().flatMap {
-        it.getChildrenOfType<YAMLKeyValue>().filter { it.keyText == "key" }
-    }.firstOrNull { it.valueText == element.text }?.value
+    val target = getTypeKeys(element).firstOrNull { it.valueText == element.text }?.value
     return target
+}
+
+private fun getTypeKeys(element: PsiElement): List<YAMLKeyValue> {
+    val yamlDocument = element.parentOfType<YAMLDocument>() ?: return emptyList()
+    return yamlDocument.getChildrenOfType<YAMLSequence>().flatMap {
+        it.getChildrenOfType<YAMLKeyValue>().filter { it.keyText == "key" }
+    }
 }
 
 inline fun <reified T: PsiElement> PsiElement.getChildrenOfType() = this.collectDescendantsOfType<T>(canGoInside = {
