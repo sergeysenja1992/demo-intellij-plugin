@@ -10,6 +10,8 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementVisitor
 import com.intellij.psi.util.parentOfType
+import com.jetbrains.rd.util.first
+import org.apache.commons.text.similarity.LevenshteinDistance
 import org.jetbrains.yaml.YAMLElementGenerator
 import org.jetbrains.yaml.psi.YAMLKeyValue
 
@@ -20,8 +22,24 @@ class LinkReferencesInspection : LocalInspectionTool() {
                 if (scalarPattern("typeKey").accepts(element)) {
                     val reference = element.reference ?: return
                     if (reference.resolve() == null) {
+
+                        val levenshtein = LevenshteinDistance()
+                        val variants = reference.variants.map { it.toString() to levenshtein.apply(it.toString(), element.text) }.toMap()
+                        val key = variants.minByOrNull { it.value }?.key ?: variants.first().key
+
                         holder.registerProblemForReference(reference, LIKE_UNKNOWN_SYMBOL,
-                            unresolvedReferenceMessage(reference))
+                            unresolvedReferenceMessage(reference),
+
+                        object: LocalQuickFix {
+                            override fun getFamilyName() = key
+
+                            override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
+                                val elementGenerator = YAMLElementGenerator.getInstance(element.project)
+                                val value = elementGenerator.createYamlKeyValue("key", key).value ?: return
+                                val parent = element.parentOfType<YAMLKeyValue>() ?: return
+                                parent.setValue(value)
+                            }
+                        })
                     }
                 }
             }
