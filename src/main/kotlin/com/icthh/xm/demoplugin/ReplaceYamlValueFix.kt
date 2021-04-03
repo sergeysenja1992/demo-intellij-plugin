@@ -11,18 +11,18 @@ import org.jetbrains.yaml.psi.YAMLKeyValue
 
 class ReplaceYamlValueFix(val acceptableValues: Collection<String>, val element: PsiElement) : LocalQuickFix {
 
-    private val closesVariant = closesVariant()
+    private val closestVariant = closestVariant()
 
-    private fun closesVariant(): String {
+    private fun closestVariant(): String {
         val levenshtein = LevenshteinDistance()
         val variants = acceptableValues.map { it to levenshtein.apply(it, element.text) }.toMap()
         return variants.minByOrNull { it.value }?.key ?: variants.first().key
     }
 
-    override fun getFamilyName() = "Change to ${closesVariant}"
+    override fun getFamilyName() = "Change to ${closestVariant}"
 
     override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
         val parent = element.parentOfType<YAMLKeyValue>() ?: return
-        replaceValue(parent, closesVariant)
+        replaceValue(parent, closestVariant)
     }
 }
