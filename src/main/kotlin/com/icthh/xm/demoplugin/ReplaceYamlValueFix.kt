@@ -9,7 +9,7 @@ import com.jetbrains.rd.util.first
 import org.apache.commons.text.similarity.LevenshteinDistance
 import org.jetbrains.yaml.psi.YAMLKeyValue
 
-class ReplaceYamlValueQuickFix(val acceptableValues: Collection<String>, val element: PsiElement) : LocalQuickFix {
+class ReplaceYamlValueFix(val acceptableValues: Collection<String>, val element: PsiElement) : LocalQuickFix {
 
     private val closesVariant = closesVariant()
 

@@ -1,7 +1,7 @@
 package com.icthh.xm.demoplugin
 
 import com.intellij.codeInspection.LocalInspectionTool
-import com.intellij.codeInspection.ProblemHighlightType
+import com.intellij.codeInspection.ProblemHighlightType.ERROR
 import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementVisitor
@@ -15,8 +15,8 @@ class BuilderTypeLocalInspection : LocalInspectionTool() {
 
             override fun visitElement(element: PsiElement) {
                 if (getPattern("builderType").accepts(element) && !acceptableValue.contains(element.text)) {
-                    holder.registerProblem(element, "${element.text} is invalid builder type",
-                        ProblemHighlightType.ERROR, ReplaceYamlValueQuickFix(acceptableValue, element))
+                    val message = "${element.text} is invalid builder type"
+                    holder.registerProblem(element, message, ERROR, ReplaceYamlValueFix(acceptableValue, element))
                 }
             }
         }

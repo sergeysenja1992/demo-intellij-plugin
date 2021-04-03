@@ -24,7 +24,7 @@ class LinkReferencesInspection : LocalInspectionTool() {
                 val message = unresolvedReferenceMessage(reference)
                 val acceptableValues = reference.variants.map { it.toString() }
                 holder.registerProblemForReference(reference, LIKE_UNKNOWN_SYMBOL, message,
-                    ReplaceYamlValueQuickFix(acceptableValues, element))
+                    ReplaceYamlValueFix(acceptableValues, element))
             }
         }
     }
