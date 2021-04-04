@@ -1,17 +1,16 @@
 package com.icthh.xm.demoplugin
 
 import com.intellij.codeInsight.daemon.EmptyResolveMessageProvider
-import com.intellij.find.actions.ShowUsagesAction
-import com.intellij.openapi.fileEditor.FileEditorManager
-import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.psi.*
-import com.intellij.psi.ElementManipulators.getValueTextRange
 import com.intellij.psi.PsiReferenceRegistrar.HIGHER_PRIORITY
 import com.intellij.psi.impl.RenameableFakePsiElement
+import com.intellij.psi.search.GlobalSearchScope
+import com.intellij.psi.search.GlobalSearchScope.FilesScope
 import com.intellij.psi.util.collectDescendantsOfType
 import com.intellij.psi.util.parentOfType
 import com.intellij.util.ProcessingContext
 import org.jetbrains.yaml.psi.*
+
 
 class XmEntitySpecPsiReferenceContributor: PsiReferenceContributor() {
     override fun registerReferenceProviders(registrar: PsiReferenceRegistrar) {
@@ -34,7 +33,7 @@ class XmEntitySpecPsiReferenceContributor: PsiReferenceContributor() {
 }
 
 class LinkTypeKeyReference(val target: YAMLScalar?, val parent: YAMLScalar, val context: ProcessingContext):
-    PsiReferenceBase<PsiElement>(parent, getValueTextRange(parent), false),
+    PsiReferenceBase<PsiElement>(parent, false),
     EmptyResolveMessageProvider {
     override fun resolve() = target?.let{ YAMLNamedPsiScalar(it) }
     override fun getUnresolvedMessagePattern(): String = "Entity with typeKey ${parent.text} not found"
@@ -43,11 +42,10 @@ class LinkTypeKeyReference(val target: YAMLScalar?, val parent: YAMLScalar, val 
         return getTypeKeys(element).map { it.valueText }.toTypedArray()
     }
 
-    override fun getElement(): PsiElement {
-        return parent
-    }
-
     override fun isReferenceTo(element: PsiElement): Boolean {
+        if (element is YAMLNamedPsiScalar) {
+            return element.source == target
+        }
         return element == target
     }
 }
@@ -69,8 +67,11 @@ inline fun <reified T: PsiElement> PsiElement.getChildrenOfType() = this.collect
 })
 
 class YAMLNamedPsiScalar(val source: YAMLScalar): RenameableFakePsiElement(source) {
+
+    val file = source.containingFile.virtualFile
+
     override fun getName(): String {
-        return ElementManipulators.getValueText(parent)
+        return ElementManipulators.getValueText(source)
     }
 
     override fun getTypeName() = "Target entity type key"
@@ -80,6 +81,10 @@ class YAMLNamedPsiScalar(val source: YAMLScalar): RenameableFakePsiElement(sourc
     override fun getNavigationElement(): PsiElement {
         return source
     }
+
+    // TODO 0 how to work find usages
+    // TODO 1 try to make self reference to key
+    // TODO 2 see symbolReferenceProvider
 
     override fun canNavigate(): Boolean {
         return true
@@ -95,11 +100,15 @@ class YAMLNamedPsiScalar(val source: YAMLScalar): RenameableFakePsiElement(sourc
         return this
     }
 
-    override fun navigate(requestFocus: Boolean) {
-        val editor = FileEditorManager.getInstance(project).selectedTextEditor ?: return
-        val popupPosition = JBPopupFactory.getInstance().guessBestPopupLocation(editor)
-
-        ShowUsagesAction.startFindUsages(this, popupPosition, editor)
+    override fun getResolveScope(): GlobalSearchScope {
+        return FilesScope.filesScope(project, listOf(file))
     }
 
+    override fun getUseScope(): GlobalSearchScope {
+        return FilesScope.filesScope(project, listOf(file))
+    }
+
+    override fun getLanguage() = source.language
+
 }
+
