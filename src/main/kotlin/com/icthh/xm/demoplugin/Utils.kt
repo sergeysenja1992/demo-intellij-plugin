@@ -4,7 +4,6 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.patterns.PlatformPatterns
 import com.intellij.patterns.PsiElementPattern
 import com.intellij.psi.PsiElement
-import org.jetbrains.yaml.YAMLElementGenerator
 import org.jetbrains.yaml.psi.*
 
 fun VirtualFile.isEntitySpec() = path.endsWith("/config/tenants/DEMO/entity/xmentityspec.yml")
@@ -26,12 +25,5 @@ fun scalarPattern(linksFieldName: String) = psiElement<YAMLScalar>().withParent(
         )
     )
 )
-
-fun replaceValue(element: YAMLKeyValue, valueText: String) {
-    val elementGenerator = YAMLElementGenerator.getInstance(element.project)
-    val colorKeyValue = elementGenerator.createYamlKeyValue(element.keyText, valueText)
-    val valueNode = colorKeyValue.value ?: return
-    element.setValue(valueNode)
-}
 
 inline fun <reified T : PsiElement> psiElement() = PlatformPatterns.psiElement(T::class.java)
