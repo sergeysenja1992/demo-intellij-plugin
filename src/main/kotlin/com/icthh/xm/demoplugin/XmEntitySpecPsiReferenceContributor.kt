@@ -19,6 +19,18 @@ class XmEntitySpecPsiReferenceContributor: PsiReferenceContributor() {
             getReferenceProvider(),
             HIGHER_PRIORITY
         )
+        registrar.registerReferenceProvider(
+            keyPattern(),
+            object : PsiReferenceProvider() {
+                override fun getReferencesByElement(element: PsiElement, context: ProcessingContext): Array<PsiReference> {
+                    if (element !is YAMLScalar) {
+                        return emptyArray()
+                    }
+                    return arrayOf(LinkTypeKeyReference(element, element, context))
+                }
+            },
+            HIGHER_PRIORITY
+        )
     }
 
     private fun getReferenceProvider() = object : PsiReferenceProvider() {
@@ -82,17 +94,8 @@ class YAMLNamedPsiScalar(val source: YAMLScalar): RenameableFakePsiElement(sourc
         return source
     }
 
-    // TODO 0 how to work find usages
-    // TODO 1 try to make self reference to key
-    // TODO 2 see symbolReferenceProvider
-
     override fun canNavigate(): Boolean {
         return true
-    }
-
-    override fun isEquivalentTo(another: PsiElement?): Boolean {
-        return equals(another) ||
-                another != null && another is YAMLScalar && another.textValue == source.textValue
     }
 
     override fun setName(name: String): PsiElement {
@@ -107,8 +110,6 @@ class YAMLNamedPsiScalar(val source: YAMLScalar): RenameableFakePsiElement(sourc
     override fun getUseScope(): GlobalSearchScope {
         return FilesScope.filesScope(project, listOf(file))
     }
-
-    override fun getLanguage() = source.language
 
 }
 

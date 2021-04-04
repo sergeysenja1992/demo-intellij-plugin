@@ -26,4 +26,16 @@ fun scalarPattern(linksFieldName: String) = psiElement<YAMLScalar>().withParent(
     )
 )
 
+fun keyPattern() = psiElement<YAMLScalar>().withParent(
+    psiElement<YAMLKeyValue>().withName("key").withParent(
+        psiElement<YAMLMapping>().withParent(
+            psiElement<YAMLSequenceItem>().withParent(
+                psiElement<YAMLSequence>().withParent(
+                    psiElement<YAMLKeyValue>().withName("types")
+                )
+            )
+        )
+    )
+)
+
 inline fun <reified T : PsiElement> psiElement() = PlatformPatterns.psiElement(T::class.java)
