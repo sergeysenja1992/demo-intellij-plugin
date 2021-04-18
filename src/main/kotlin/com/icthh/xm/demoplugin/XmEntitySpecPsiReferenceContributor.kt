@@ -62,19 +62,18 @@ class LinkTypeKeyReference(val parent: PsiElement, val context: ProcessingContex
         }
         return element == target
     }
+
+    private fun getTypeKeys(element: PsiElement): List<YAMLKeyValue> {
+        val yamlDocument = element.parentOfType<YAMLDocument>() ?: return emptyList()
+        return yamlDocument.getChildrenOfType<YAMLSequence>().flatMap {
+            it.getChildrenOfType<YAMLKeyValue>().filter { it.keyText == "key" }
+        }.toList()
+    }
+
+    private inline fun <reified T: PsiElement> PsiElement.getChildrenOfType() = this.descendants(canGoInside = {
+        it !is T
+    }).filterIsInstance<T>()
 }
-
-
-private fun getTypeKeys(element: PsiElement): List<YAMLKeyValue> {
-    val yamlDocument = element.parentOfType<YAMLDocument>() ?: return emptyList()
-    return yamlDocument.getChildrenOfType<YAMLSequence>().flatMap {
-        it.getChildrenOfType<YAMLKeyValue>().filter { it.keyText == "key" }
-    }.toList()
-}
-
-inline fun <reified T: PsiElement> PsiElement.getChildrenOfType() = this.descendants(canGoInside = {
-    it !is T
-}).filterIsInstance<T>()
 
 class YAMLNamedPsiScalar(val source: YAMLValue): RenameableFakePsiElement(source) {
 
