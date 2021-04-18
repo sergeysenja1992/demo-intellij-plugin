@@ -66,7 +66,7 @@ class YAMLNamedPsiScalar(val source: YAMLValue): RenameableFakePsiElement(source
 
     override fun getNavigationElement() = source
 
-    //override fun setName(name: String) = ElementManipulators.handleContentChange(source, name)
+    override fun setName(name: String) = ElementManipulators.handleContentChange(source, name)
 
     override fun getResolveScope() = FilesScope.filesScope(project, listOf(file))
 
