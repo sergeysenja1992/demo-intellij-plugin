@@ -6,10 +6,13 @@ import com.intellij.psi.PsiReferenceRegistrar.HIGHER_PRIORITY
 import com.intellij.psi.impl.RenameableFakePsiElement
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.search.GlobalSearchScope.FilesScope
-import com.intellij.psi.util.collectDescendantsOfType
+import com.intellij.psi.util.descendants
 import com.intellij.psi.util.parentOfType
 import com.intellij.util.ProcessingContext
-import org.jetbrains.yaml.psi.*
+import org.jetbrains.yaml.psi.YAMLDocument
+import org.jetbrains.yaml.psi.YAMLKeyValue
+import org.jetbrains.yaml.psi.YAMLSequence
+import org.jetbrains.yaml.psi.YAMLValue
 
 
 class XmEntitySpecPsiReferenceContributor: PsiReferenceContributor() {
@@ -23,10 +26,7 @@ class XmEntitySpecPsiReferenceContributor: PsiReferenceContributor() {
             keyPattern(),
             object : PsiReferenceProvider() {
                 override fun getReferencesByElement(element: PsiElement, context: ProcessingContext): Array<PsiReference> {
-                    if (element !is YAMLScalar) {
-                        return emptyArray()
-                    }
-                    return arrayOf(LinkTypeKeyReference(element, element, context))
+                    return arrayOf(LinkTypeKeyReference(element, context))
                 }
             },
             HIGHER_PRIORITY
@@ -35,19 +35,20 @@ class XmEntitySpecPsiReferenceContributor: PsiReferenceContributor() {
 
     private fun getReferenceProvider() = object : PsiReferenceProvider() {
         override fun getReferencesByElement(element: PsiElement, context: ProcessingContext): Array<PsiReference> {
-            val target = findReferenceTarget(element)
-            if (target !is YAMLScalar? || element !is YAMLScalar) {
-                return emptyArray()
-            }
-            return arrayOf(LinkTypeKeyReference(target, element, context))
+            return arrayOf(LinkTypeKeyReference(element, context))
         }
     }
 }
 
-class LinkTypeKeyReference(val target: YAMLScalar?, val parent: YAMLScalar, val context: ProcessingContext):
+class LinkTypeKeyReference(val parent: PsiElement, val context: ProcessingContext):
     PsiReferenceBase<PsiElement>(parent, false),
     EmptyResolveMessageProvider {
-    override fun resolve() = target?.let{ YAMLNamedPsiScalar(it) }
+
+    private fun findReferenceTarget(element: PsiElement): YAMLValue? {
+        return getTypeKeys(element).firstOrNull { it.valueText == element.text }?.value
+    }
+
+    override fun resolve() = findReferenceTarget(parent)?.let{ YAMLNamedPsiScalar(it) }
     override fun getUnresolvedMessagePattern(): String = "Entity with typeKey ${parent.text} not found"
 
     override fun getVariants(): Array<Any> {
@@ -55,6 +56,7 @@ class LinkTypeKeyReference(val target: YAMLScalar?, val parent: YAMLScalar, val 
     }
 
     override fun isReferenceTo(element: PsiElement): Boolean {
+        val target = findReferenceTarget(parent)
         if (element is YAMLNamedPsiScalar) {
             return element.source == target
         }
@@ -62,23 +64,19 @@ class LinkTypeKeyReference(val target: YAMLScalar?, val parent: YAMLScalar, val 
     }
 }
 
-private fun findReferenceTarget(element: PsiElement): YAMLValue? {
-    val target = getTypeKeys(element).firstOrNull { it.valueText == element.text }?.value
-    return target
-}
 
 private fun getTypeKeys(element: PsiElement): List<YAMLKeyValue> {
     val yamlDocument = element.parentOfType<YAMLDocument>() ?: return emptyList()
     return yamlDocument.getChildrenOfType<YAMLSequence>().flatMap {
         it.getChildrenOfType<YAMLKeyValue>().filter { it.keyText == "key" }
-    }
+    }.toList()
 }
 
-inline fun <reified T: PsiElement> PsiElement.getChildrenOfType() = this.collectDescendantsOfType<T>(canGoInside = {
+inline fun <reified T: PsiElement> PsiElement.getChildrenOfType() = this.descendants(canGoInside = {
     it !is T
-})
+}).filterIsInstance<T>()
 
-class YAMLNamedPsiScalar(val source: YAMLScalar): RenameableFakePsiElement(source) {
+class YAMLNamedPsiScalar(val source: YAMLValue): RenameableFakePsiElement(source) {
 
     val file = source.containingFile.virtualFile
 
