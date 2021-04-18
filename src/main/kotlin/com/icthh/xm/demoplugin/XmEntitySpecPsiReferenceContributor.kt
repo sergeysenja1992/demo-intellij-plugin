@@ -14,6 +14,7 @@ import org.jetbrains.yaml.psi.YAMLValue
 class XmEntitySpecPsiReferenceContributor: PsiReferenceContributor() {
     override fun registerReferenceProviders(registrar: PsiReferenceRegistrar) {
         registrar.registerReferenceProvider(scalarPattern("typeKey"), getReferenceProvider())
+        registrar.registerReferenceProvider(keyPattern(), getReferenceProvider())
     }//1
 
     private fun getReferenceProvider() = object : PsiReferenceProvider() {
