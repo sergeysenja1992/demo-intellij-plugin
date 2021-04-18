@@ -13,18 +13,14 @@ import org.jetbrains.yaml.psi.YAMLValue
 
 class XmEntitySpecPsiReferenceContributor: PsiReferenceContributor() {
     override fun registerReferenceProviders(registrar: PsiReferenceRegistrar) {
-        registrar.registerReferenceProvider(
-            scalarPattern("typeKey"),
-            getReferenceProvider()
-        )
-    }
+        registrar.registerReferenceProvider(scalarPattern("typeKey"), getReferenceProvider())
+    }//1
 
     private fun getReferenceProvider() = object : PsiReferenceProvider() {
-        override fun getReferencesByElement(element: PsiElement, context: ProcessingContext): Array<PsiReference> {
-            return arrayOf(LinkTypeKeyReference(element))
-        }
-    }
-}
+        override fun getReferencesByElement(element: PsiElement, context: ProcessingContext) =
+            arrayOf(LinkTypeKeyReference(element))
+    }//2
+}//1.1
 
 class LinkTypeKeyReference(val parent: PsiElement): PsiReferenceBase<PsiElement>(parent, false) {
 
@@ -38,7 +34,7 @@ class LinkTypeKeyReference(val parent: PsiElement): PsiReferenceBase<PsiElement>
         return yamlDocument.getChildrenOfType<YAMLSequence>().flatMap {
             it.getChildrenOfType<YAMLKeyValue>().filter { it.keyText == "key" }
         }.toList()
-    }
+    }//3
 
     private inline fun <reified T: PsiElement> PsiElement.getChildrenOfType() =
         this.descendants(canGoInside = { it !is T }).filterIsInstance<T>()
@@ -51,8 +47,8 @@ class LinkTypeKeyReference(val parent: PsiElement): PsiReferenceBase<PsiElement>
             return element.source == target
         }
         return element == target
-    }
-}
+    }//4
+}//1.2
 
 class YAMLNamedPsiScalar(val source: YAMLValue): RenameableFakePsiElement(source) {
 
@@ -60,16 +56,16 @@ class YAMLNamedPsiScalar(val source: YAMLValue): RenameableFakePsiElement(source
 
     override fun getName() = ElementManipulators.getValueText(source)
 
-    override fun getTypeName() = "Target entity type key"
-
-    override fun getIcon() = null
+    override fun setName(name: String) = ElementManipulators.handleContentChange(source, name)
 
     override fun getNavigationElement() = source
-
-    override fun setName(name: String) = ElementManipulators.handleContentChange(source, name)
 
     override fun getResolveScope() = FilesScope.filesScope(project, listOf(file))
 
     override fun getUseScope() = FilesScope.filesScope(project, listOf(file))
 
-}
+    override fun getTypeName() = "Target entity type key"
+
+    override fun getIcon() = null
+
+}//1.3

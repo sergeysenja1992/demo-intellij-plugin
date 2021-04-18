@@ -14,12 +14,12 @@ class LinkReferencesInspection : LocalInspectionTool() {
                 if (scalarPattern("typeKey").accepts(element)) {
                     val reference = element.reference ?: return
                     if (reference.resolve() == null) {
-                        addQuickFix(element, reference)
+                        registerProblem(element, reference)
                     }
                 }
             }
 
-            private fun addQuickFix(element: PsiElement, reference: PsiReference) {
+            private fun registerProblem(element: PsiElement, reference: PsiReference) {
                 val message = ProblemsHolder.unresolvedReferenceMessage(reference)
                 val acceptableValues = reference.variants.map { it.toString() }
                 holder.registerProblemForReference(reference, LIKE_UNKNOWN_SYMBOL, message,
