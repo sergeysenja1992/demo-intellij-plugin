@@ -15,7 +15,7 @@ class BuilderTypeLocalInspection : LocalInspectionTool() {
         isOnTheFly: Boolean
     ): PsiElementVisitor {
         return object : YamlPsiElementVisitor() {
-            val acceptableValue = setOf<String>("NEW", "BUILDER")
+            val acceptableValue = setOf<String>("NEW", "SEARCH")
 
             override fun visitElement(element: PsiElement) {
                 if (getPattern().accepts(element) && !acceptableValue.contains(element.text)) {
