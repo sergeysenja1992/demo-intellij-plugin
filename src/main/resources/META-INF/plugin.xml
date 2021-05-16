@@ -20,14 +20,6 @@
                          enabledByDefault="true"
                          level="ERROR" implementationClass="com.icthh.xm.demoplugin.BuilderTypeLocalInspection" />
         <psi.referenceContributor implementation="com.icthh.xm.demoplugin.XmEntitySpecPsiReferenceContributor" />
-        <localInspection language="yaml" implementationClass="com.icthh.xm.demoplugin.LinkReferencesInspection"
-                         bundle="messages.XmEntitySpecification"
-                         key="inspections.link.target.typeKey"
-                         groupKey="inspections.group.name"
-                         shortName="LinkReferencesInspection"
-                         enabledByDefault="true"
-                         level="ERROR"
-        />
     </extensions>
 
     <extensions defaultExtensionNs="JavaScript">

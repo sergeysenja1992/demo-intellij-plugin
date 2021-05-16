@@ -1,4 +1,5 @@
-import com.icthh.xm.demoplugin.scalarPattern
+package com.icthh.xm.demoplugin
+
 import com.intellij.psi.*
 import com.intellij.psi.util.collectDescendantsOfType
 import com.intellij.psi.util.parentOfType
