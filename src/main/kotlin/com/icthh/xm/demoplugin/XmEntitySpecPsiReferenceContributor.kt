@@ -2,6 +2,7 @@ package com.icthh.xm.demoplugin
 
 import com.intellij.psi.*
 import com.intellij.psi.impl.RenameableFakePsiElement
+import com.intellij.psi.search.GlobalSearchScope.FilesScope
 import com.intellij.psi.util.descendants
 import com.intellij.psi.util.parentOfType
 import com.intellij.util.ProcessingContext
@@ -40,6 +41,13 @@ class LinkTypeKeyReference(val parent: PsiElement): PsiReferenceBase<PsiElement>
 
     override fun getVariants() = getTypeKeys(element).map { it.valueText }.toTypedArray()
 
+    override fun isReferenceTo(element: PsiElement): Boolean {
+        val target = findReferenceTarget(parent)
+        if (element is YAMLNamedPsiScalar) {
+            return element.source == target
+        }
+        return element == target
+    }//4
 }//1.2
 
 class YAMLNamedPsiScalar(val source: YAMLValue): RenameableFakePsiElement(source) {
@@ -51,6 +59,10 @@ class YAMLNamedPsiScalar(val source: YAMLValue): RenameableFakePsiElement(source
     override fun setName(name: String) = ElementManipulators.handleContentChange(source, name)
 
     override fun getNavigationElement() = source
+
+    override fun getResolveScope() = FilesScope.filesScope(project, listOf(file))
+
+    override fun getUseScope() = FilesScope.filesScope(project, listOf(file))
 
     override fun getTypeName() = "Target entity type key"
 
