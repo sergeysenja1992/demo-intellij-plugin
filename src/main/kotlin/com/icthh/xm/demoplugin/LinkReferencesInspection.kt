@@ -22,8 +22,7 @@ class LinkReferencesInspection : LocalInspectionTool() {
             private fun registerProblem(element: PsiElement, reference: PsiReference) {
                 val message = ProblemsHolder.unresolvedReferenceMessage(reference)
                 val acceptableValues = reference.variants.map { it.toString() }
-                holder.registerProblemForReference(reference, LIKE_UNKNOWN_SYMBOL, message,
-                    ReplaceYamlValueFix(acceptableValues, element))
+                holder.registerProblemForReference(reference, LIKE_UNKNOWN_SYMBOL, message)
             }
         }
     }
