@@ -1,7 +1,11 @@
 package com.icthh.xm.demoplugin
 
 import com.intellij.codeInspection.LocalInspectionTool
+import com.intellij.codeInspection.LocalQuickFix
+import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemsHolder
+import com.intellij.openapi.project.Project
+import com.intellij.psi.ElementManipulators
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementVisitor
 import com.jetbrains.rd.util.first
@@ -24,9 +28,26 @@ class BuilderTypeLocalInspection : LocalInspectionTool() {
                     val variants = acceptableValue.map { it to levenshtein.apply(it, element.text) }.toMap()
                     val key = variants.minByOrNull { it.value }?.key ?: variants.first().key
 
-                    holder.registerProblem(element, "${element.text} is invalid builder type")
+                    holder.registerProblem(element, "${element.text} is invalid builder type", ReplaceYamlValueFix(acceptableValue, element))
                 }
             }
         }
+    }
+}
+
+
+class ReplaceYamlValueFix(val acceptableValues: Collection<String>, val element: PsiElement): LocalQuickFix {
+
+    private val closesVariant = closesVariant()
+    private fun closesVariant(): String? {
+        val levenshtein = LevenshteinDistance()
+        return acceptableValues.minByOrNull { levenshtein.apply(it, element.text) }
+
+    }
+
+    override fun getFamilyName() = "Change to ${closesVariant}"
+
+    override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
+        ElementManipulators.handleContentChange(element, closesVariant)
     }
 }
