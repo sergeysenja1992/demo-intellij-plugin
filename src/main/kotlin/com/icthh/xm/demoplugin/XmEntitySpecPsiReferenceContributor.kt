@@ -38,6 +38,4 @@ class LinkTypeKeyReference(val parent: PsiElement): PsiReferenceBase<PsiElement>
         it !is T
     })
 
-    override fun getVariants() = getTypeKeys(element).map { it.valueText }.toTypedArray()
-
 }//1.2
