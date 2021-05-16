@@ -43,6 +43,6 @@ class ReplaceYamlValueFix(val acceptableValues: Collection<String>, val element:
     override fun getFamilyName() = "Change to ${closesVariant}"
 
     override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
-        ElementManipulators.handleContentChange(element, closesVariant)
+        ElementManipulators.handleContentChange(element.parent, closesVariant)
     }
 }
