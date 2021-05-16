@@ -8,7 +8,8 @@ import com.intellij.psi.util.parentOfType
 import com.jetbrains.rd.util.first
 import org.apache.commons.text.similarity.LevenshteinDistance
 import org.jetbrains.yaml.YAMLElementGenerator
-import org.jetbrains.yaml.psi.*
+import org.jetbrains.yaml.psi.YAMLKeyValue
+import org.jetbrains.yaml.psi.YamlPsiElementVisitor
 
 class BuilderTypeLocalInspection : LocalInspectionTool() {
 
@@ -17,7 +18,7 @@ class BuilderTypeLocalInspection : LocalInspectionTool() {
         isOnTheFly: Boolean
     ): PsiElementVisitor {
         return object : YamlPsiElementVisitor() {
-            val acceptableValue = setOf<String>("NEW", "BUILDER")
+            val acceptableValue = setOf<String>("NEW", "SEARCH")
 
             override fun visitElement(element: PsiElement) {
                 if (getPattern("builderType").accepts(element) && !acceptableValue.contains(element.text)) {
