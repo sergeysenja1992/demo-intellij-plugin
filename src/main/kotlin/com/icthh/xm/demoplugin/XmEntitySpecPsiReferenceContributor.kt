@@ -1,10 +1,24 @@
-import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiReferenceBase
+package com.icthh.xm.demoplugin
+
+import com.intellij.psi.*
 import com.intellij.psi.util.collectDescendantsOfType
 import com.intellij.psi.util.parentOfType
+import com.intellij.util.ProcessingContext
 import org.jetbrains.yaml.psi.YAMLDocument
 import org.jetbrains.yaml.psi.YAMLKeyValue
 import org.jetbrains.yaml.psi.YAMLSequence
+
+
+class XmEntitySpecPsiReferenceContributor: PsiReferenceContributor() {
+    override fun registerReferenceProviders(registrar: PsiReferenceRegistrar) {
+        registrar.registerReferenceProvider(scalarPattern("typeKey"), getReferenceProvider())
+    }//1
+
+    private fun getReferenceProvider() = object : PsiReferenceProvider() {
+        override fun getReferencesByElement(element: PsiElement, context: ProcessingContext) =
+            arrayOf(LinkTypeKeyReference(element))
+    }//2
+}//1.1
 
 class LinkTypeKeyReference(val parent: PsiElement): PsiReferenceBase<PsiElement>(parent, false) {
 
