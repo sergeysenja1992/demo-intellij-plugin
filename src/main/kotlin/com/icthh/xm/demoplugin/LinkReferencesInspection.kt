@@ -1,17 +1,11 @@
 package com.icthh.xm.demoplugin
 
 import com.intellij.codeInspection.LocalInspectionTool
-import com.intellij.codeInspection.LocalQuickFix
-import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType.LIKE_UNKNOWN_SYMBOL
 import com.intellij.codeInspection.ProblemsHolder
-import com.intellij.codeInspection.ProblemsHolder.unresolvedReferenceMessage
-import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementVisitor
-import com.intellij.psi.util.parentOfType
-import org.jetbrains.yaml.YAMLElementGenerator
-import org.jetbrains.yaml.psi.YAMLKeyValue
+import com.intellij.psi.PsiReference
 
 class LinkReferencesInspection : LocalInspectionTool() {
     override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor {
@@ -20,10 +14,16 @@ class LinkReferencesInspection : LocalInspectionTool() {
                 if (scalarPattern("typeKey").accepts(element)) {
                     val reference = element.reference ?: return
                     if (reference.resolve() == null) {
-                        holder.registerProblemForReference(reference, LIKE_UNKNOWN_SYMBOL,
-                            unresolvedReferenceMessage(reference))
+                        registerProblem(element, reference)
                     }
                 }
+            }
+
+            private fun registerProblem(element: PsiElement, reference: PsiReference) {
+                val message = ProblemsHolder.unresolvedReferenceMessage(reference)
+                val acceptableValues = reference.variants.map { it.toString() }
+                holder.registerProblemForReference(reference, LIKE_UNKNOWN_SYMBOL, message,
+                    ReplaceYamlValueFix(acceptableValues, element))
             }
         }
     }
